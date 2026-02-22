@@ -245,7 +245,39 @@
       return;
     }
 
-    const mailto = `mailto:${encodeURIComponent(email.to)}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
-    window.location.href = mailto;
+sendBtn.onclick = async () => {
+  const email = buildEmail(payload);
+
+  if (!email.to) {
+    clientEmail.focus();
+    return;
+  }
+
+  sendBtn.disabled = true;
+
+  try {
+    const resp = await fetch("https://api.web-app.no", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: email.to,
+        subject: email.subject,
+        body: email.body,
+        replyTo: (brokerEmail.value || "").trim()
+      })
+    });
+
+    if (!resp.ok) {
+      alert("Eroare la trimitere.");
+      return;
+    }
+
+    alert("Email trimis cu succes.");
+  } catch (e) {
+    alert("Eroare de conexiune.");
+  } finally {
+    sendBtn.disabled = false;
+  }
+};
   };
 })();
