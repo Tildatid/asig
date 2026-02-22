@@ -238,6 +238,7 @@
   } catch (_) {}
 
   sendBtn.onclick = () => {
+    alert("click");
     const email = buildEmail(payload);
 
     if (!email.to) {
