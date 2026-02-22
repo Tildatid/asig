@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Setări</title>
+</head>
+<body>
+  <header class="jig-header">
+    <div class="container">
+      <div class="brand">
+        <span class="logo">.JIG</span>
+        <span class="team">by St. Artur</span>
+      </div>
+      <div class="header-actions">
+        <div class="lang">
+          <select id="langSelect">
+            <label for="langSelect" id="langLabel"></label>
+            <option value="ro">RO</option>
+            <option value="ru">RU</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="calculator quote-page">
+    <div class="topbar">
+      <button id="backBtn" class="ghost-btn" type="button">←</button>
+      <h2 id="settingsTitle">Setări</h2>
+    </div>
+
+    <div class="field">
+      <label id="presetLabel">Preset broker (se salvează local pe acest device)</label>
+      <div class="summary-card" id="presetHint"></div>
+    </div>
+
+    <div class="field">
+      <label id="brokerFirstLabel">Nume</label>
+      <input id="brokerFirst" type="text" autocomplete="given-name" />
+    </div>
+    <div class="field">
+      <label id="brokerLastLabel">Prenume</label>
+      <input id="brokerLast" type="text" autocomplete="family-name" />
+    </div>
+    <div class="field">
+      <label id="brokerPhoneLabel">Telefon</label>
+      <input id="brokerPhone" type="tel" autocomplete="tel" />
+    </div>
+    <div class="field">
+      <label id="brokerEmailLabel">Email (broker)</label>
+      <input id="brokerEmail" type="email" autocomplete="email" placeholder="broker@gmail.com" />
+    </div>
+
+    <div class="actions actions-split">
+      <button id="saveBtn" class="primary-btn" type="button">Salvează</button>
+      <button id="clearBtn" class="ghost-btn" type="button">Șterge</button>
+    </div>
+
+    <div class="disclaimer" id="settingsNote" role="note" aria-label="Note">
+      <div class="disclaimer-title" id="noteTitle">Notă</div>
+      <div class="disclaimer-text" id="noteText"></div>
+    </div>
+  </div>
+
+  <footer>© 2025 .JIG by Artur Stefirta</footer>
+
+  <script src="settings.js"></script>
+</body>
+</html>

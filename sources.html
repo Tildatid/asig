@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surse — PDF</title>
+  <meta name="description" content="Surse (PDF) pentru tarife: informații și tabele." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="jig-header" role="banner">
+  <div class="container">
+    <div class="brand">
+      <span class="logo">.JIG</span>
+      <span class="team">by St. Artur</span>
+    </div>
+
+    <div class="lang">
+      <label for="langSelect" id="langLabel"></label>
+      <select id="langSelect" aria-label="Select language">
+        <option value="ro">RO</option>
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
+      </select>
+    </div>
+  </div>
+</header>
+
+<main role="main">
+  <div class="calculator">
+    <div class="topbar">
+      <a class="back-link" href="index.html" id="backLink" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15.5 5 8.5 12l7 7 1.5-1.5L11.5 12 17 6.5 15.5 5Z" />
+        </svg>
+        <span id="sourcesTitle">Surse (PDF)</span>
+      </a>
+    </div>
+
+    <p class="sources-lead" id="sourcesLead">
+      Pentru fiecare tarif găsești două fișiere: „Informații” și „Tabele”.
+    </p>
+
+    <div id="sourcesList" class="sources-list"></div>
+
+    <section class="about" id="aboutSection" aria-labelledby="aboutTitle">
+      <h3 class="section-title" id="aboutTitle">О проекте</h3>
+
+      <div class="about-block">
+        <h4 class="about-subtitle" id="aboutLegalTitle">Правовой статус приложения</h4>
+        <div class="about-text" id="aboutLegalText"></div>
+      </div>
+
+      <div class="about-block">
+        <h4 class="about-subtitle" id="aboutSourcesTitle">Источники данных</h4>
+        <div class="about-text" id="aboutSourcesText"></div>
+      </div>
+
+      <div class="about-block">
+        <h4 class="about-subtitle" id="aboutLiabilityTitle">Ограничение ответственности</h4>
+        <div class="about-text" id="aboutLiabilityText"></div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer>© 2025 .JIG by Artur Stefirta</footer>
+
+<script src="sources.js"></script>
+</body>
+</html>
