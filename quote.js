@@ -247,6 +247,25 @@
     }
 
 sendBtn.onclick = async () => {
+  alert("click");
+
+try {
+  const resp = await fetch("https://api.web-app.no", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: "ТВОЙ_EMAIL_ДЛЯ_ТЕСТА@domain.com",
+      subject: "TEST from phone",
+      body: "Hello",
+      replyTo: "broker@gmail.com"
+    })
+  });
+
+  const text = await resp.text();
+  alert(`API status: ${resp.status}\n\n${text.slice(0, 300)}`);
+} catch (e) {
+  alert(`FETCH FAILED: ${String(e)}`);
+}
   const email = buildEmail(payload);
 
   if (!email.to) {
