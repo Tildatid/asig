@@ -247,8 +247,6 @@
     }
 
 sendBtn.onclick = async () => {
-  alert("click");
-
 try {
   const resp = await fetch("https://api.web-app.no", {
     method: "POST",
