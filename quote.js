@@ -50,7 +50,8 @@
       clientDob: "Data nașterii",
       send: "Trimite pe email",
       noteTitle: "Notă",
-      noteHtml: "Email-ul se deschide prin aplicația ta de mail (mailto). Pentru trimitere automată fără mailto, ai nevoie de un serviciu (de exemplu EmailJS / endpoint propriu).",
+      noteHtml:
+        "Email-ul se deschide prin aplicația ta de mail (mailto). Pentru trimitere automată fără mailto, ai nevoie de un serviciu (de exemplu EmailJS / endpoint propriu).",
       lang: "Limbă",
       backAria: "Înapoi",
       missing: "Nu există date de ofertă. Revino la calculator și alege un tarif."
@@ -70,7 +71,8 @@
       clientDob: "Дата рождения",
       send: "Отправить на email",
       noteTitle: "Примечание",
-      noteHtml: "Письмо открывается в вашей почтовой программе (mailto). Для автоматической отправки без mailto нужен сервис (например EmailJS / собственный endpoint).",
+      noteHtml:
+        "Письмо открывается в вашей почтовой программе (mailto). Для автоматической отправки без mailto нужен сервис (например EmailJS / собственный endpoint).",
       lang: "Язык",
       backAria: "Назад",
       missing: "Нет данных предложения. Вернись в калькулятор и выбери тариф."
@@ -90,7 +92,8 @@
       clientDob: "Date of birth",
       send: "Send by email",
       noteTitle: "Note",
-      noteHtml: "Email opens via your mail app (mailto). For fully automatic sending without mailto, you need a service (e.g., EmailJS / your own endpoint).",
+      noteHtml:
+        "Email opens via your mail app (mailto). For fully automatic sending without mailto, you need a service (e.g., EmailJS / your own endpoint).",
       lang: "Language",
       backAria: "Back",
       missing: "No quote data. Go back to the calculator and select a tariff."
@@ -103,10 +106,11 @@
 
   function setLang(lang) {
     localStorage.setItem("lang", lang);
-    langSelect.value = lang;
+    if (langSelect) langSelect.value = lang;
     document.documentElement.lang = lang;
 
     const t = I18N[lang] || I18N.ro;
+
     quoteTitle.textContent = t.quoteTitle;
     calcLabel.textContent = t.calc;
 
@@ -152,6 +156,15 @@
     };
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
   function renderSummary(payload) {
     const lines = [
       `<strong>${escapeHtml(payload.tariffName)}</strong>`,
@@ -160,16 +173,7 @@
       `Primă anuală: <strong>${escapeHtml(String(payload.premiumKey))}</strong>`,
       `Durata: <strong>${escapeHtml(String(payload.term))}</strong>`
     ];
-    summary.innerHTML = lines.map(l => `<div>${l}</div>`).join("");
-  }
-
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+    summary.innerHTML = lines.map((l) => `<div>${l}</div>`).join("");
   }
 
   function buildEmail(payload) {
@@ -198,7 +202,8 @@
     return {
       to,
       subject,
-      body: bodyLines.join("\n")
+      body: bodyLines.join("\n"),
+      replyTo: (brokerEmail.value || "").trim()
     };
   }
 
@@ -207,7 +212,9 @@
     window.location.href = "index.html";
   };
 
-  langSelect.onchange = () => setLang(langSelect.value);
+  if (langSelect) {
+    langSelect.onchange = () => setLang(langSelect.value);
+  }
 
   const payload = readPayload();
   const lang = payload?.lang || getLang();
@@ -237,8 +244,12 @@
     }
   } catch (_) {}
 
-  sendBtn.onclick = () => {
-    alert("click");
+  // ONE handler only (no nested onclick)
+  let isSending = false;
+
+  sendBtn.onclick = async () => {
+    if (isSending) return;
+
     const email = buildEmail(payload);
 
     if (!email.to) {
@@ -246,56 +257,34 @@
       return;
     }
 
-sendBtn.onclick = async () => {
-try {
-  const resp = await fetch("https://api.web-app.no", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      to: "ТВОЙ_EMAIL_ДЛЯ_ТЕСТА@domain.com",
-      subject: "TEST from phone",
-      body: "Hello",
-      replyTo: "broker@gmail.com"
-    })
-  });
+    isSending = true;
+    sendBtn.disabled = true;
 
-  const text = await resp.text();
-  alert(`API status: ${resp.status}\n\n${text.slice(0, 300)}`);
-} catch (e) {
-  alert(`FETCH FAILED: ${String(e)}`);
-}
-  const email = buildEmail(payload);
+    try {
+      const resp = await fetch("https://api.web-app.no", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: email.to,
+          subject: email.subject,
+          body: email.body,
+          replyTo: email.replyTo
+        })
+      });
 
-  if (!email.to) {
-    clientEmail.focus();
-    return;
-  }
+      const text = await resp.text(); // чтобы увидеть причину 422
 
-  sendBtn.disabled = true;
+      if (!resp.ok) {
+        alert(`Eroare la trimitere. Status: ${resp.status}\n\n${text.slice(0, 300)}`);
+        return;
+      }
 
-  try {
-    const resp = await fetch("https://api.web-app.no", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: email.to,
-        subject: email.subject,
-        body: email.body,
-        replyTo: (brokerEmail.value || "").trim()
-      })
-    });
-
-    if (!resp.ok) {
-      alert("Eroare la trimitere.");
-      return;
+      alert("Email trimis cu succes.");
+    } catch (e) {
+      alert(`Eroare de conexiune: ${String(e)}`);
+    } finally {
+      isSending = false;
+      sendBtn.disabled = false;
     }
-
-    alert("Email trimis cu succes.");
-  } catch (e) {
-    alert("Eroare de conexiune.");
-  } finally {
-    sendBtn.disabled = false;
-  }
-};
   };
 })();
